@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processed Table</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Analysis of the Table</h1>
+        <div id="markdown-content"></div>
+        <a href="{{ url_for('index') }}">Upload another file</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const markdownContent = `{{ markdown_table|safe }}`;
+            const htmlContent = marked.parse(markdownContent);
+            document.getElementById('markdown-content').innerHTML = htmlContent;
+        });
+    </script>
+</body>
+</html>
