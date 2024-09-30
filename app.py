@@ -9,7 +9,7 @@ UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 client = OpenAI(
-    api_key="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"
+    api_key=""
 )
 
 if not os.path.exists(UPLOAD_FOLDER):
