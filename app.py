@@ -8,9 +8,7 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-client = OpenAI(
-    api_key=""
-)
+client = OpenAI()
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
@@ -36,20 +34,21 @@ def upload_file():
 
         # Send the Markdown to OpenAI API and get the response
         ai_response = complete_table_with_ai(markdown_table)
-        
+        print(ai_response)
         return render_template('result.html', markdown_table=ai_response)
 
 def complete_table_with_ai(markdown_table):
 
     print(markdown_table)
     # Prepare the prompt for OpenAI
-    prompt = f"You are an expert cybersecurity analyst who specializes in risk controls and analysis. Your primary job is asking questions to the business and assessing the evidence they provide against a cybersecurity control, and making the final decision on whether the evidence is sufficient to meet the rigorous criteria of this control. I will give you an example of a control or controls, the confirmation statement and examples of evidence, and you will determine whether the response by the business is acceptable or needs further clarification or is insufficient and raise a finding. Your input will be a markdown table that I will send after the message 'Here is your table'. Please fill in the Findings column of the table, and then return the completed table in Markdown format. ONLY return the table, do not yap and add any unnecessary responses.Only elaborate in the Findings column why you think the evidence is insufficient to meet the control. Here is your table:{markdown_table}"
+    prompt = f"You are an expert cybersecurity analyst who specializes in risk controls and analysis. Your primary job is asking questions to the business and assessing the evidence they provide against a cybersecurity control, and making the final decision on whether the evidence is sufficient to meet the rigorous criteria of this control. I will give you an example of a control or controls, the confirmation statement and examples of evidence, and you will determine whether the response by the business is acceptable or needs further clarification or is insufficient and raise a finding. Your input will be a markdown table that I will send after the message 'Here is your table'. Please fill in the 'Design Effectiveness', 'Operational Effectiveness','Is there a Finding?' and 'Findings' columns of the table, and then return the completed table in Markdown format. ONLY return the table, do not yap and add any unnecessary responses. Only populate the 'Design Effectiveness' and ' Operational effectiveness' columns with the following list of values, based on your judgement:'Fully Effective','Partially Effective','Ineffective','Not Relevant'. Only populate the 'Is there a Finding' column with the values 'Yes' or 'No' based on your judgement. Please populate the Findings column on why you think that the response meets or doesn't meet the control.Here is your table:{markdown_table}"
     
     print(prompt)
     # Send the request to OpenAI and get the response
     completion = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}],
+        temperature=0.2
     )
     # Extract the response text
     ai_completed_table = completion.choices[0].message.content
@@ -57,4 +56,4 @@ def complete_table_with_ai(markdown_table):
     return ai_completed_table
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
